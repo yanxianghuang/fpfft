@@ -49,6 +49,4 @@ The following figure shows the example result for the FFT, for sure the error is
 
 The followig figure show the pareto points tw-frac size againt input-frac size. On each curve, the rms error is the same. Obviously, right-upper curves denotes less error. It generally tells that, the word-width of the input should be 5-bit wider than the twiddle factors. Otherwise one of them becomes the bottleneck for error.
 
-![compare](./result/fft-fp-error-pareto.jpg)
-
-
+![pareto points](./result/fft-fp-error-pareto.jpg)
