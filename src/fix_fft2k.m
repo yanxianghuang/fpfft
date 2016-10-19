@@ -19,8 +19,10 @@ tw_2k_real = real(tw(1:end-1));
 tw_2k_imag = imag(tw(1:end-1));
 
 
+
 [real_out, imag_out ] = fix_fft(real(x), imag(x), tw_2k_real, tw_2k_imag,...
     int32(NPoint), int32(NStage), int32(x_frac), int32(tw_frac) );
+
 
 %% we do not have bit reorder in FFT.cpp file, so add one here in
 output_args = bitrevorder(real_out + 1j.*imag_out); 

@@ -2,7 +2,10 @@
 % created by Yanxiang on 16, Spet, 2016
 % yanxiang.huang@imec.be
 
+clear; close all;
 np = 2048; % 2k fft test
+systematic_comparison = true;
+
 
 %% 1. input
 figure(1);
@@ -11,34 +14,21 @@ in = ((rand(1,np)-0.5).*2);
 subplot(5,1,1);
 plot(in);
 title('input');
-systematic_comparison = true;
 
 
-
-
-
-
-%% 2. quantize only input, this correspond to the .data approach
-tic;
-fixed_in = sfi(in, input_frac+2);
-fixed_in = fixed_in.data;
-out2 = fft(fixed_in); 
-toc;
-subplot(5,1,5);
-fi_error = fftshift( abs(out2)-abs(fft(in)) );
-plot( fi_error );
-title('the only-quantize input FFT error');
-fprintf(sprintf('###Only-quantize-input built-in FFT rms error %f \n', rms(fi_error)));
-
-
-
-
-
-
-
-%% 3. my fixed_point, using the generated c-mex file
 input_frac = 11; %% It is tested the result is correct until input_frac = 28, which is way sufficent
 tw_frac = input_frac-5; %% It is tested the result is correct until tw_frac = 28, which is way sufficient
+
+
+
+
+
+
+
+
+
+
+%% 2. my fixed_point, using the generated c-mex file
 
 % IMPORTANT SIZE INFORMATION !!!!!!!!!!!!!!!!!!
 % the bit_width of input is calculated as input_frac + input_integer
@@ -53,7 +43,7 @@ tw_frac = input_frac-5; %% It is tested the result is correct until tw_frac = 28
 % so its size is always tw_frac+2
 
 tic;
-out1 = fix_fft2k(in, input_frac, tw_frac); % easy to use: complex input, input_frac_size, tw_frac size 
+out1 = fix_fft2k(in, input_frac, tw_frac); % easy to use: complex input, input_frac_size, tw_frac size
 toc;
 subplot(5,1,2);
 plot( fftshift(abs(fft(in)) ));
@@ -63,8 +53,6 @@ subplot(5,1,3);
 plot( fftshift(abs(out1) ));
 title('My FFT output');
 
-
-
 subplot(5,1,4);
 my_error = fftshift( abs(out1)-abs(fft(in)) );
 plot( my_error );
@@ -73,33 +61,50 @@ fprintf(sprintf('###My C-mex FFT rms error %f \n', rms(my_error)));
 
 
 
-%% 4. systematic comparison (optional)
 
+
+%% 3. error analysis (optional)
 if systematic_comparison,
-my_error_grid = 0;
-fi_error_grid = 0;
-for input_frac = 1:1:30,
-    for tw_frac = 1:1:26,
-        
-        out1 = fix_fft2k(in, input_frac, tw_frac);
-        my_error_grid(input_frac, tw_frac) = rms( fftshift( abs(out1)-abs(fft(in)) ) );
-        
-        fixed_in = sfi(in, input_frac+2);
-        fixed_in = fixed_in.data;
-        out2 = fft(fixed_in); 
-        fi_error_grid(input_frac, tw_frac) = rms( fftshift( abs(out2)-abs(fft(in)) ) );
+  my_error_grid = 0;
+  for the_input_frac = 1:1:30,
+    for the_tw_frac = 1:1:26,
+      out1 = fix_fft2k(in, the_input_frac, the_tw_frac);
+      my_error_grid(the_input_frac, the_tw_frac) = rms( fftshift( abs(out1)-abs(fft(in)) ) );
     end
+  end
+  figure(2);
+  contour( log10(my_error_grid) ); %% in log10 domain
+  title('my fixed-point FFT error vs. input-size and tw-size');
+  xlabel('tw-frac size');
+  ylabel('input-frac size');
+  fprintf('You can find that in figure(2), with lines showing same error-level, the corners are almost always at input_frac = tw_frac+5. \nSo keep that trend as the rule-of-thumb in your design.\n');
+end  
+  
+  
+  
+  
+%% 4. quantize only inputs, optimistic
+tic;
+fixed_in = sfi(in, input_frac+2);
+fixed_in = fixed_in.data;
+
+out2 = fft(fixed_in);
+toc;
+figure(1),subplot(5,1,5);
+fi_error = fftshift( abs(out2)-abs(fft(in)) );
+plot( fi_error );
+title('the only-quantize input FFT error');
+fprintf(sprintf('###Only-quantize-input built-in FFT rms error %f \n', rms(fi_error)));
+
+fi_error_grid = 0;
+for the_input_frac = 1:1:30,
+  fixed_in = sfi(in, the_input_frac+2);
+  fixed_in = fixed_in.data;
+  out2 = fft(fixed_in);
+  fi_error_grid(the_input_frac) = rms( fftshift( abs(out2)-abs(fft(in)) ) );
 end
- 
-figure(2);
-contour( log10(my_error_grid) ); %% in log10 domain 
-title('my fixed-point FFT error vs. input-size and tw-size');
-xlabel('tw-frac size');
-ylabel('input-frac size');
-fprintf('You can find that in figure(2), the corners are almost always at input_frac = tw_frac+5, \nso keep that trend as the rule-of-thumb in your design.\n');
 
 figure(3);
-semilogy( fi_error_grid(:,1));
+semilogy( fi_error_grid);
 title('if only quantization input, FFT error decrease as input-size increase');
 xlabel('frac_width');ylabel('rms error');
-end

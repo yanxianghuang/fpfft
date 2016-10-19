@@ -24,6 +24,7 @@
 //#include <cstdint.h> // use this for pure cpp
 #include <tmwtypes.h>
 
+//#define DEBUG
 
 
 // decimation-in-time FFT
