@@ -9,7 +9,9 @@ $$number-of-bit = integer-bit + fraction-bit$$
 integer-bit represents the bits before the decimal, whereas fraction-bit shows the one after. For twiddle factor, as the range is always [-1, 1], the integer-bit is always 2, and the user may specify the fraction-bit as you like. For input number, a 3+5 bit input example 010.01100 represents 2+0.25+0.125=2.375.
 
 The FFT is implemented with decimated-in-time fft (see below for 8-point example):
-![8-bit FFT example](./doc/8pfft.jpg).
+
+![8-bit FFT example](./doc/8pfft.jpg)
+
 Internally, after each addition, the number is right-shifted by one, to avoid wordlength increase. The same is done for the twiddle factor multiplication (right shift by frac-twiddle-size). Therefore, the wordlength within the intern FFT is always kept the same. This minimize hardware cost for the real-hardware we want to model. 
 
 
@@ -44,9 +46,11 @@ to build a new mex file.
 The speed of the C-mex is 60ms for 1k execution of 2k fft, comapring with 40ms for 1k execution of the same-size built-in fft().
 
 The following figure shows the example result for the FFT, for sure the error is larger (plot4) than the case where we only quantify the input and keep the rest compuation as double precesion (plot5). The difference is about 100-times, or 7-bits. This is due to the only-quantize-input method keeps intermidiate computation as double precesion, which is over-optimistic for signal processing hardwares
+
 ![compare](./result/fft-top.jpg)
 
 The followig figure show the pareto points tw-frac size againt input-frac size. On each curve, the rms error is the same. Obviously, right-upper curves denotes less error. It generally tells that, the word-width of the input should be 5-bit wider than the twiddle factors. Otherwise one of them becomes the bottleneck for error.
-![compare](./result/fft-top.jpg)
+
+![compare](./result/fft-fp-error-pareto.jpg)
 
 
