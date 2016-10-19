@@ -3,7 +3,9 @@ A fixed-point.cpp that was complied by matlab mex, so that realistic-fixed-point
 
 # detailed implementation
 You can config the number-of-bit for input number and twiddle-factors. Currently, 
-$$number-of-bit = integer-bit + fraction-bit$$
+
+$$number_of_bit = integer_bit + fraction_bit$$
+
 integer-bit represents the bits before the decimal, whereas fraction-bit shows the one after. For twiddle factor, as the range is always [-1, 1], the integer-bit is always 2, and the user may specify the fraction-bit as you like. For input number, a 3+5 bit input example 010.01100 represents 2+0.25+0.125=2.375.
 
 The FFT is implemented with decimated-in-time fft (see below for 8-point example):
