@@ -1,7 +1,5 @@
-This file 
-
 # intro
-A fixed-point.cpp that was complied by matlab mex, so that realistic-fixed-point fft can be simulated as fast as built-in matlab fft() function.
+A fixed-point.cpp that was complied by matlab mex, so that realistic-fixed-point fft can be simulated as fast as the built-in matlab fft() function.
 
 # detailed implementation
 You can config the number-of-bit for input number and twiddle-factors. Currently, 
