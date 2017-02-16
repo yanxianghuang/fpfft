@@ -74,7 +74,7 @@ void my_fix_fft(int64_T *x_real, int64_T *x_imag, int32_T *tw_real, int32_T *tw_
         printf("value: %lf, %lf*i;   %lf, %lf*i\n", ((double)x_real[in1])/(1<<30), ((double)x_imag[in1])/(1<<30),
           ((double)x_real[in2])/(1<<30), ((double)x_imag[in2])/(1<<30));
         #endif
-      }// end block 
+      }// end of block 
     }// end iteration
     Nblocks  = (Nblocks <<1);
   }// end FFT
@@ -89,8 +89,6 @@ void my_fix_fft(int64_T *x_real, int64_T *x_imag, int32_T *tw_real, int32_T *tw_
 
 void mexFunction( int nlhs, mxArray *plhs[],
         int nrhs, const mxArray *prhs[])
-        
-        
 {
   //checks
   if (nrhs != 4+4){
